@@ -1,0 +1,22 @@
+{
+  "name": "@eliware/syslog",
+  "version": "1.0.0",
+  "description": "MySQL-backed syslog collector in Node.js.",
+  "type": "module",
+  "main": "syslog.mjs",
+  "scripts": {
+    "start": "node syslog.mjs",
+    "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --coverage --detectOpenHandles --silent --runInBand",
+    "lint": "npx oxlint . --ignore-pattern 'node_modules/**'"
+  },
+  "author": "Eli Sterling, eliware.org <eli@eliware.org>",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mysql2": "^3.14.3"
+  },
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "oxlint": "^1.74.0"
+  }
+}

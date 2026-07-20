@@ -1,0 +1,18 @@
+[Unit]
+Description=Syslog Collector
+After=network-online.target
+Wants=network-online.target
+StartLimitBurst=3
+StartLimitIntervalSec=60
+
+[Service]
+User=root
+Group=root
+RestartSec=5
+Restart=on-failure
+WorkingDirectory=/opt/syslogd
+ExecStart=/opt/syslogd/syslogd.mjs
+EnvironmentFile=/opt/syslogd/.env
+
+[Install]
+WantedBy=multi-user.target

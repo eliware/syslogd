@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Test and coverage output
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+logs/
+
+# Runtime files
+*.pid
+*.pid.lock
+
+# Local agent/tool state
+.agentx_responseid
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/

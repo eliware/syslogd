@@ -4,7 +4,7 @@ MySQL-backed syslog collector in Node.js.
 
 Path:
 
-- /opt/syslogd
+- the checked-out project root
 
 ## Purpose
 

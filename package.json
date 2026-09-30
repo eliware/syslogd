@@ -2,6 +2,13 @@
   "name": "@eliware/syslog",
   "version": "1.0.0",
   "description": "MySQL-backed syslog collector in Node.js.",
+  "keywords": [
+    "syslog",
+    "logging",
+    "mysql",
+    "log-collector",
+    "nodejs"
+  ],
   "type": "module",
   "main": "syslog.mjs",
   "scripts": {

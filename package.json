@@ -42,6 +42,7 @@
     "endOfLine": "lf"
   },
   "eliware": {
+    "id": "E-1380",
     "apply": ["general", "application", "ghcr-published"]
   }
 }

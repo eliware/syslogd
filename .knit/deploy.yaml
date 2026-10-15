@@ -1,0 +1,11 @@
+version: 1
+on:
+  push:
+    deployments:
+      - target: dev
+        cwd: /eliware/syslogd
+        timeoutMs: 300000
+        commands:
+          - git pull --ff-only origin main
+          - npm ci
+          - npm test

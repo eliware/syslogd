@@ -1,0 +1,69 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm -g install npm@latest
+      - run: npm ci
+      - run: npm test
+
+  publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: ghcr-publish
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify release tag matches package version
+        run: node -e "const version=require('./package.json').version;if(process.env.GITHUB_REF_NAME!=='v'+version)process.exit(1)"
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and publish image
+        id: image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+      - name: Attest published image
+        uses: actions/attest@v4
+        with:
+          subject-name: ${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.image.outputs.digest }}
+          push-to-registry: true
+      - name: Verify version tag resolves to the pushed digest
+        run: test "$(docker buildx imagetools inspect "$IMAGE_NAME:$GITHUB_REF_NAME" --format '{{.Manifest.Digest}}')" = "${{ steps.image.outputs.digest }}"
+      - name: Inspect image by digest
+        run: docker buildx imagetools inspect "$IMAGE_NAME@${{ steps.image.outputs.digest }}"
+      - name: Verify signed image attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh attestation verify "oci://$IMAGE_NAME@${{ steps.image.outputs.digest }}" --repo "${{ github.repository }}"
+      - name: Record release handoff evidence
+        run: 'echo "${{ steps.image.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"'
